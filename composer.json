@@ -1,0 +1,36 @@
+{
+    "name": "edrard/phpnextcloud",
+    "description": "Nextcloud uploader",
+    "type": "project",
+    "license": "MIT",
+    "keywords": ["nextcloud", "linux"],
+    "homepage": "https://github.com/Edrard/PhpNextcloud",
+    "authors": [
+        {
+            "name": "Edrard",
+            "email": "demonand@gmail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/Edrard/function.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/Edrard/MyLog.git"
+        }
+
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "edrard/function": "dev-master",
+        "edrard/mylog": "dev-master",
+    },
+    "autoload": {
+        "psr-4": {
+            "edrard\\Phpnextcloud\\": "src/Phpnextcloud",
+            "edrard\\ExcPhpnextcloud\\": "src/Exc"
+        }
+    }
+}
