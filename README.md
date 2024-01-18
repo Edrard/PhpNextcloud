@@ -1,7 +1,7 @@
 # PhpNextcloud
 Simple Php Nextcloud uploader
 
-
+```
 $config = array(
     'url' => 'https://nextcloud/',
     'login' => 'login',
@@ -16,3 +16,4 @@ if($uploader->uploadFile('1500mb.bin')){
     $sharing = new Sharing($config);
     $respons = $sharing->share('1500mb.bin');
 }
+```
