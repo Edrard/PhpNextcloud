@@ -11,9 +11,9 @@ $config = array(
 
 # Uploading file
 $uploader = new Uploader($config);
-if($uploader->uploadFile('1500mb.bin')){
+if($uploader->uploadFile('1500mb.bin','/path/inside/nc')){
     #Share File for public
     $sharing = new Sharing($config);
-    $respons = $sharing->share('1500mb.bin');
+    $respons = $sharing->share('1500mb.bin','/path/inside/nc');
 }
 ```
