@@ -38,7 +38,8 @@ class Check
         $response = curl_exec($curl);
         curl_close($curl);
         $status = static::checkRespons($response);
-        MyLog::info("Checking upload Url - $url:".$status ? 'Good' : 'Bad');
+        $respons = $status !== FALSE ? 'Good' : 'Bad';
+        MyLog::info("Checking upload Url - $url: ".$respons);
         return $status;
     }
     static private function checkRespons($response){
