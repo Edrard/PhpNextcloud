@@ -25,7 +25,7 @@ class Uploader
 
             $this->checkFile($filepath);
             $data = $this->readFileIn($filepath);
-            $this->uploadFileToNext($filename,$data,$dest);
+            $this->uploadFileToNext($filename,$filepath,$data,$dest);
 
         }Catch(\Exception $e){
             MyLog::critical('['.string_split_last(get_class($e)).'] '.$e->getMessage());
@@ -40,7 +40,7 @@ class Uploader
         }
         return;
     }
-    private function uploadFileToNext($filename,$data,$dest=''){
+    private function uploadFileToNext($filename,$filepath,$data,$dest=''){
         MyLog::info("Starting uploading file - ".$filename);
         $url = $this->config['url'].'remote.php/dav/files/'.$this->config['login'].'/'.( !$dest ? '' : $dest.'/' ).$filename;
         $options = array(
@@ -59,7 +59,19 @@ class Uploader
         curl_setopt_array($curl, $options);
         $response = curl_exec($curl);
         curl_close($curl);
-        MyLog::info("Ending uploading file - ".$filename);
+        $status = Check::checkIfUploaded($url,$this->config['login'],$this->config['password'],$this->config['httpheader']);
+        if($status !== FALSE){
+            MyLog::info("Ending uploading file - ".$filename);
+        }else{
+            MyLog::info("ALTERNATIVE!!! Start uploading file - ".$filename);
+            $this->uploadAlternative($url,$filepath,$this->config['login'],$this->config['password']);
+            MyLog::info("ALTERNATIVE!!! Ending uploading file - ".$filename);
+        }
+    }
+    private function uploadAlternative($url,$filepath,$login,$pass){
+        $run = 'curl -k -s -u "'.$login.':'.$pass.'" -T "'.$filepath.'" "'.$url.'"';
+        exec($run);
+
     }
     private function readFileIn($filepath){
         $open = fopen($filepath, "rb");
