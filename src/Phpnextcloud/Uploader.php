@@ -9,6 +9,7 @@ use edrard\ExcPhpnextcloud\NoFileException;
 class Uploader
 {
     protected $config;
+    protected $url;
 
     function __construct(array $config){
         MyLog::init();
@@ -24,9 +25,16 @@ class Uploader
             $path = $f['dirname'];
 
             $this->checkFile($filepath);
-            $data = $this->readFileIn($filepath);
-            $this->uploadFileToNext($filename,$filepath,$data,$dest);
+            $this->createUrl($filename,$dest);
 
+            $this->uploadFileToNextAlternative($this->url,$filepath,$this->config['login'],$this->config['password']);
+            $status = Check::checkIfUploaded($this->url,$this->config['login'],$this->config['password'],$this->config['httpheader']);
+            if($status !== FALSE){
+                MyLog::info("Ending uploading file - ".$filename);
+            }else{
+                $data = $this->readFileIn($filepath);
+                $this->uploadFileToNext($filename,$data);
+            }
         }Catch(\Exception $e){
             MyLog::critical('['.string_split_last(get_class($e)).'] '.$e->getMessage());
             return False;
@@ -40,13 +48,12 @@ class Uploader
         }
         return;
     }
-    private function uploadFileToNext($filename,$filepath,$data,$dest=''){
+    private function uploadFileToNext($filename,$data){
         MyLog::info("Starting uploading file - ".$filename);
-        $url = $this->config['url'].'remote.php/dav/files/'.$this->config['login'].'/'.( !$dest ? '' : $dest.'/' ).$filename;
         $options = array(
             CURLOPT_SAFE_UPLOAD => true,
             CURLOPT_CUSTOMREQUEST => "PUT",
-            CURLOPT_URL => $url,
+            CURLOPT_URL => $this->url,
             CURLOPT_POSTFIELDS => $data,
             CURLOPT_SSL_VERIFYPEER=> false,
             CURLOPT_RETURNTRANSFER=> 1,
@@ -59,19 +66,16 @@ class Uploader
         curl_setopt_array($curl, $options);
         $response = curl_exec($curl);
         curl_close($curl);
-        $status = Check::checkIfUploaded($url,$this->config['login'],$this->config['password'],$this->config['httpheader']);
-        if($status !== FALSE){
-            MyLog::info("Ending uploading file - ".$filename);
-        }else{
-            MyLog::info("ALTERNATIVE!!! Start uploading file - ".$filename);
-            $this->uploadAlternative($url,$filepath,$this->config['login'],$this->config['password']);
-            MyLog::info("ALTERNATIVE!!! Ending uploading file - ".$filename);
-        }
     }
-    private function uploadAlternative($url,$filepath,$login,$pass){
+
+    private function createUrl($filename,$dest=''){
+        $this->url = $this->config['url'].'remote.php/dav/files/'.$this->config['login'].'/'.( !$dest ? '' : $dest.'/' ).$filename;
+    }
+    private function uploadFileToNextAlternative($url,$filepath,$login,$pass){
+        MyLog::info("ALTERNATIVE!!! Start uploading file - ".pathinfo($filepath)['basename']);
         $run = 'curl -k -s -u "'.$login.':'.$pass.'" -T "'.$filepath.'" "'.$url.'"';
         exec($run);
-
+        MyLog::info("ALTERNATIVE!!! Ending uploading file - ".pathinfo($filepath)['basename']);
     }
     private function readFileIn($filepath){
         $open = fopen($filepath, "rb");
