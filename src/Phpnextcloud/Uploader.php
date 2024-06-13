@@ -34,6 +34,7 @@ class Uploader
             }else{
                 $data = $this->readFileIn($filepath);
                 $this->uploadFileToNext($filename,$data);
+                unset($data);
             }
         }Catch(\Exception $e){
             MyLog::critical('['.string_split_last(get_class($e)).'] '.$e->getMessage());
