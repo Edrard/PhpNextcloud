@@ -51,31 +51,17 @@ class Uploader
     }
     private function uploadFileToNext($filename,$data){
         MyLog::info("Starting uploading file - ".$filename);
-        $options = array(
-            CURLOPT_SAFE_UPLOAD => true,
-            CURLOPT_CUSTOMREQUEST => "PUT",
-            CURLOPT_URL => $this->url,
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_SSL_VERIFYPEER=> false,
-            CURLOPT_RETURNTRANSFER=> 1,
-            CURLOPT_HTTPAUTH=>CURLAUTH_BASIC,
-            CURLOPT_USERPWD=> $this->config['login'].':'.$this->config['password'],
-            CURLOPT_HTTPHEADER=>$this->config['httpheader']
-        );
 
-        $curl = curl_init();
-        curl_setopt_array($curl, $options);
-        $response = curl_exec($curl);
-        curl_close($curl);
+        Action::phpCurl($this->url,"PUT",$this->config['httpheader'],$this->config['login'],$this->config['password'],$data);
     }
 
     private function createUrl($filename,$dest=''){
-        $this->url = $this->config['url'].'remote.php/dav/files/'.$this->config['login'].'/'.( !$dest ? '' : $dest.'/' ).$filename;
+        //$this->url = $this->config['url'].'remote.php/dav/files/'.$this->config['login'].'/'.( !$dest ? '' : $dest.'/' ).$filename;
+        $this->url = Info::createUrl($filename,$this->config['url'],$this->config['login'],$dest);
     }
     private function uploadFileToNextAlternative($url,$filepath,$login,$pass){
         MyLog::info("ALTERNATIVE!!! Start uploading file - ".pathinfo($filepath)['basename']);
-        $run = 'curl -k -s -u "'.$login.':'.$pass.'" -T "'.$filepath.'" "'.$url.'"';
-        exec($run);
+        Action::shellCurl($url,$filepath,$login,$pass,"PUT");
         MyLog::info("ALTERNATIVE!!! Ending uploading file - ".pathinfo($filepath)['basename']);
     }
     private function readFileIn($filepath){
