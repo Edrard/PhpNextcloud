@@ -16,7 +16,7 @@ class Uploader
         MyLog::info("Init Phpnextcloud Upload library with config",$config);
         $this->config = $config;
     }
-    public function uploadFile($filepath,$dest=''){
+    public function uploadFile($filepath,$dest='',$alt = TRUE){
         Timer::startTime('uploadfile');
         try{
             $f = pathinfo($filepath);
@@ -26,22 +26,25 @@ class Uploader
 
             $this->checkFile($filepath);
             $this->createUrl($filename,$dest);
-
-            $this->uploadFileToNextAlternative($this->url,$filepath,$this->config['login'],$this->config['password']);
-            $status = Check::checkIfUploaded($this->url,$this->config['login'],$this->config['password'],$this->config['httpheader']);
+            $status = FALSE;
+            if($alt !== FALSE){
+                $this->uploadFileToNextAlternative($this->url,$filepath,$this->config['login'],$this->config['password']);
+                $status = Check::checkIfUploaded($this->url,$this->config['login'],$this->config['password'],$this->config['httpheader']);
+            }
             if($status !== FALSE){
                 MyLog::info("Ending uploading file - ".$filename);
             }else{
                 $data = $this->readFileIn($filepath);
                 $this->uploadFileToNext($filename,$data);
                 unset($data);
+                $status = Check::checkIfUploaded($this->url,$this->config['login'],$this->config['password'],$this->config['httpheader']);
             }
         }Catch(\Exception $e){
             MyLog::critical('['.string_split_last(get_class($e)).'] '.$e->getMessage());
             return False;
         }
         MyLog::info("File uploaded in: ".Timer::getTime('uploadfile'));
-        return True;
+        return $status;
     }
     private function checkFile($filepath){
         if (!file_exists($filepath)) {
