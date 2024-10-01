@@ -15,7 +15,7 @@ $config = array(
 
 $uploader = new Uploader($config);
 
-# In fucntion $uploader->uploadFile is third parametr is False, then its not using shell Curl
+# In fucntion $uploader->uploadFile if third parametr is False, then its not using shell Curl
 
 if($uploader->uploadFile('1500mb.bin','/path/inside/nc')){
     #Share File for public
