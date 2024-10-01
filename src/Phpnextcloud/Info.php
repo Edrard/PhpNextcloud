@@ -12,7 +12,7 @@ class Info
 
     function __construct(array $config){
         MyLog::init();
-        MyLog::info("Init Phpnextcloud Delete with config",$config);
+        MyLog::info("Init Phpnextcloud Info with config",$config);
         $this->config = $config;
     }
     static public function createUrl($filename,$base,$login,$dest=''){
