@@ -21,22 +21,7 @@ class Check
         <d:getetag/>
         </d:prop>
         </d:propfind>';
-        $options = array(
-            CURLOPT_SAFE_UPLOAD => true,
-            CURLOPT_CUSTOMREQUEST => "PROPFIND ",
-            CURLOPT_URL => $url,
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_SSL_VERIFYPEER=> false,
-            CURLOPT_RETURNTRANSFER=> 1,
-            CURLOPT_HTTPAUTH=>CURLAUTH_BASIC,
-            CURLOPT_USERPWD=> $login.':'.$password,
-            CURLOPT_HTTPHEADER=>$httpheader
-        );
-
-        $curl = curl_init();
-        curl_setopt_array($curl, $options);
-        $response = curl_exec($curl);
-        curl_close($curl);
+        $response = Action::phpCurl($url,"PROPFIND",$httpheader,$login,$password,$data);
         $status = static::checkRespons($response);
         $respons = $status !== FALSE ? 'Good' : 'Bad';
         MyLog::info("Checking upload Url - ".$url.": ".$respons);

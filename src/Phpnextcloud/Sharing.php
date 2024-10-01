@@ -31,23 +31,7 @@ class Sharing
     private function uploadFileToNext($filename,$dest=''){
         MyLog::info("Sharing file - ".$filename);
         $url = $this->config['url'].'ocs/v2.php/apps/files_sharing/api/v1/shares';
-
-        $options = array(
-            CURLOPT_POST => 1,
-            CURLOPT_URL => $url,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => 'note="Shared on '.date("Y-m-d").'"&shareType=3&path=/'.( !$dest ? '' : $dest.'/' ).$filename,
-            CURLOPT_SSL_VERIFYPEER=> false,
-            CURLOPT_RETURNTRANSFER=> 1,
-            CURLOPT_HTTPAUTH=>CURLAUTH_BASIC,
-            CURLOPT_USERPWD=> $this->config['login'].':'.$this->config['password'],
-            CURLOPT_HTTPHEADER=>$this->config['httpheader']
-        );
-
-        $curl = curl_init();
-        curl_setopt_array($curl, $options);
-        $response = curl_exec($curl);
-        curl_close($curl);
-        return $response;
+        $data = 'note="Shared on '.date("Y-m-d").'"&shareType=3&path=/'.( !$dest ? '' : $dest.'/' ).$filename;
+        return Action::phpCurl($url,"POST",$this->config['httpheader'],$this->config['login'],$this->config['password'],$data);
     }
 }
