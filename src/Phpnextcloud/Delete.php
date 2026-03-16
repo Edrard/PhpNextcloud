@@ -29,13 +29,25 @@ class Delete
             return False;
         }
     }
+    public function cleanTrash($user){
+        try{
+            $this->url = Info::createUrl('',$this->config['url'],$this->config['login'],'trash','trashbin');
+            MyLog::info("Start cleaning trash for user - ".$user);
+            Action::phpCurl($this->url,"DELETE",$this->config['httpheader'],$this->config['login'],$this->config['password']);
+            MyLog::info("Cleaning complite!");
+        }Catch(\Exception $e){
+            MyLog::critical('['.string_split_last(get_class($e)).'] '.$e->getMessage());
+            return False;
+        }
+
+    }
     private function deleteFileFromNext($filename,$dest=''){
         MyLog::info("Deleting File - ".$filename);
         Action::phpCurl($this->url,"DELETE",$this->config['httpheader'],$this->config['login'],$this->config['password']);
         $status = Check::checkIfUploaded($this->url,$this->config['login'],$this->config['password'],$this->config['httpheader']);
         if($status !== FALSE){
-             MyLog::error($filename." not deleted");
-             return FALSE;
+            MyLog::error($filename." not deleted");
+            return FALSE;
         }
         MyLog::info($filename." was deleted ");
         return TRUE;

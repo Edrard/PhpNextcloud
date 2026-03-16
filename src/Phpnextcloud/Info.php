@@ -15,8 +15,8 @@ class Info
         MyLog::info("Init Phpnextcloud Info with config",$config);
         $this->config = $config;
     }
-    static public function createUrl($filename,$base,$login,$dest=''){
-        return $base.'remote.php/dav/files/'.$login.'/'.( !$dest ? '' : $dest.'/' ).$filename;
+    static public function createUrl($filename,$base,$login,$dest='',$type='files'){
+        return $base.'remote.php/dav/'.$type.'/'.$login.'/'.( !$dest ? '' : $dest.'/' ).$filename;
     }
     public function getFolderList($dest=''){
         MyLog::info("Getting info fo directory - ",$dest);

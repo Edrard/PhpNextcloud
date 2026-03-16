@@ -25,3 +25,5 @@ $delete->delete('64mb.bin');
 
 $info = new Info($config);
 $list = $info->getFolderList();
+
+$delete->cleanTrash($config['login']);
