@@ -29,8 +29,9 @@ class Delete
             return False;
         }
     }
-    public function cleanTrash($user){
+    public function cleanTrash($user=FALSE){
         try{
+            $user = $user ? $user : $this->config['login'];
             $this->url = Info::createUrl('',$this->config['url'],$this->config['login'],'trash','trashbin');
             MyLog::info("Start cleaning trash for user - ".$user);
             Action::phpCurl($this->url,"DELETE",$this->config['httpheader'],$this->config['login'],$this->config['password']);
